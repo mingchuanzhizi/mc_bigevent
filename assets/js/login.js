@@ -3,11 +3,18 @@ $(function () {
     $('#link_reg').click(function () {
         $('.login-box').hide()
         $('.reg-box').show()
+        // 清空登录信息
+        // $('.layui-form-item [name=username]').val('')
+        // $('.layui-form-item [name=password]').val('')
     })
     // 去登陆
     $('#link_login').click(function () {
         $('.reg-box').hide()
         $('.login-box').show()
+        // 清空注册去的内容
+        // $('.layui-form-item [name=username]').val('')
+        // $('.layui-form-item [name=password]').val('')
+        // $('.layui-form-item [name=repassword]').val('')
     })
     // 自定义校验规则
     // 从layui中获取form对象
@@ -47,44 +54,52 @@ $(function () {
                 return '两次密码不一致'
         }
     })
-    $('#reg_form').submit(function (e) {
+    $('#reg_form').on('submit', function (e) {
         e.preventDefault()
         var data = {
-            username: $('.layui-form-item [name=username]').val(),
-            password: $('.layui-form-item [name=password]').val()
+            username: $('.reg-box [name=username]').val(),
+            password: $('.reg-box [name=password]').val()
+            // username: $('.in-user').val(),
+            // password: $('.in-pass').val()
         }
-        $.post(
-            'http://127.0.0.1/reg/post',
-            data,
-            function (res) {
-                if (res.status !== 0) {
-                    return layer.msg('注册失败');
+        $.ajax({
+            method: 'post',
+            url: '/api/reg/post',
+            data: data,
+            success: function (res) {
+                if (res.status === 1) {
+                    return layer.msg(res.msg);
                 }
-                layer.msg('注册成功，请登录');
-                // 模拟人的点击直接去登录
-                $('#link_login').click()
-                // 清空注册去的内容
-                $('.layui-form-item [name=username]').val('')
-                $('.layui-form-item [name=password]').val('')
-                $('.layui-form-item [name=repassword]').val('')
-            })
+                else if (res.status === 2) {
+                    layer.msg('注册成功，请登录');
+                    console.log(res.username)
+                    console.log(res.password)
+                    // 模拟人的点击直接去登录
+                    $('#link_login').click()
+                }
+            }
+        })
     })
     $('#login_form').submit(function (e) {
         e.preventDefault()
         $.ajax({
             method: 'post',
-            url: 'http://127.0.0.1/login/post',
+            url: '/api/login/post',
             // 快速获取表单中的数据
+            // 该数据是json格式 如果后端想要获取需要设置相应的解析中间键
             data: $(this).serialize(),
             success: function (res) {
-                if (status !== 0)
-                    return layer.msg('登陆失败')
-                layer.msg('登陆成功')
-                // 将登录成功的token字符串缓存到localStorage中
-                localStorage.setItem('token', res.token)
-                console.log(res.token)
-                // 跳转到主页
-                location.href = '../../home/index.html'
+                if (res.status !== 0)
+                    return layer.msg(res.msg)
+                else {
+                    layer.msg('登陆成功')
+                    // 将登录成功的token字符串缓存到localStorage中
+                    localStorage.setItem('token', 'Bearer ' + res.token)
+                    console.log(res.token, res.username)
+                    // 跳转到主页
+                    location.href = '../../home/index.html'
+
+                }
             }
         })
     })
