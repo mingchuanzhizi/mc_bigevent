@@ -11,12 +11,18 @@ $(function () {
             layer.close(index)
         });
     })
+    $.ajax({
+        method: 'get',
+        url: '/my/userinfo',
+        success: function (res) {
+            console.log(res)
+        }
+    })
 })
 function GetBaseInformation() {
     $.ajax({
         method: 'get',
         url: '/my/userinfo',
-        // 请求头
         success: function (res) {
             if (res.status !== 0) {
                 return layer.message
@@ -34,7 +40,6 @@ function GetBaseInformation() {
                 $('.layui-nav-img').attr(src, 'res.data.user_pick').show()
                 $('.text-avatar').hide()
             }
-            console.log(res, avatorpick)
         }
     })
 }

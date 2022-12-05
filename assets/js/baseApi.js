@@ -11,8 +11,6 @@ $.ajaxPrefilter(function (options) {
     }
     options.complete = function (res) {
         // 不论成功还是失败都会执行 complete 函数
-        console.log('complete')
-        console.log(res)
         // 在complete 函数中可以通过res.responseJSON拿到服务器响应回来的数据
         if (res.responseJSON.status === 401 && res.responseJSON.msg === '无效的token') {
             // 强制清空token
